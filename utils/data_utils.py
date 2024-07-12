@@ -22,8 +22,8 @@ def preprocess_data(df):
     df['Tipo de Validação'] = df['Tipo de Validação'].fillna('Não Validado')
     df['Data da Validação'] = df['Data da Validação'].fillna("01/01/1900 00:00:00")
     df = df.fillna(0)
-    df['Data do Cadastro'] = pd.to_datetime(df['Data do Cadastro'], dayfirst=True)
-    df['Data da Validação'] = pd.to_datetime(df['Data da Validação'], dayfirst=True)
+    df['Data do Cadastro'] = pd.to_datetime(df['Data do Cadastro'], dayfirst=True, format='mixed')
+    df['Data da Validação'] = pd.to_datetime(df['Data da Validação'], dayfirst=True, format='mixed')
     df['dt_validação'] = df['Data da Validação'].dt.date
     df = df.sort_values(['Data da Validação', 'Data do Cadastro'], ascending=False)
     df['Year'] = df['Data do Cadastro'].dt.year.astype(str)
