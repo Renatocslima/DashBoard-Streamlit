@@ -15,16 +15,16 @@ def main():
 
     # Pré-processar dados
     df = preprocess_data(df)
-   
-    col11, col12 = st.columns(2)
-    col21, col22 = st.columns(2)
-    col31, col32 = st.columns(2)
     
     # Configuração de Filtro
-    local = ['TODAS'] + list(df['Localidade'].unique())
+    l0 = list(df['Localidade'].unique())
+    l0.sort()
+    local = ['TODAS'] + l0
+    m0 = list(df['Month'].unique())
+    m0.sort(reverse=True)
     localidade = st.sidebar.selectbox('Localidade', local)
     ano = st.sidebar.selectbox('Ano', df['Year'].unique())
-    mes = st.sidebar.selectbox('Mês', df['Month'].unique())
+    mes = st.sidebar.selectbox('Mês', m0)
 
     if localidade == 'TODAS':
         filtro = local
@@ -39,42 +39,23 @@ def main():
     df_validação = df_validação[df_validação['Localidade'].isin(filtro)]
 
     # Gráficos
-    color_map = {'Validado': '#00049E', 'Não Validado': '#7275FE', 'Aguardando Análise': 'gray', 'Complemento de Fotos e Informações': 'gray', 'Revisão Interna': 'gray'}
+    color_map = {'Validado': '#00049E', 'Não Validado': '#7275FE', 'Aguardando Análise': 'gray', 
+                 'Complemento de Fotos e Informações': 'gray', 'Revisão Interna': 'gray',
+                 'Validável': '#00049E', 'Não Validável': 'gray'}
     color_map1 = ['#00049E','#7275FE']
 
-    prod_dia = df_filtrado.groupby(['Day', 'Tipo de Validação'])['Matrícula'].count().reset_index()
-    fig_date = create_line_chart(prod_dia, 'Day', 'Matrícula', 'Tipo de Validação', "Visitas por dia", color_map=color_map)
-    col11.plotly_chart(fig_date)
+    prod_dia = df_filtrado.groupby(['Day', 'Tipo de Ocorrência'])['Matrícula'].count().reset_index()
+    fig_date = create_line_chart(prod_dia, 'Day', 'Matrícula', 'Tipo de Ocorrência', "Visitas por dia", color_map=color_map)
+    st.plotly_chart(fig_date)
 
     Agente_dia = df_filtrado.groupby(df_filtrado['Day'])['Agente do Cadastro'].nunique().reset_index()
-    fig_date = create_line_chart(Agente_dia, 'Day', 'Agente do Cadastro', None, "Visitas por dia", color_map1=color_map1)
-    col11.plotly_chart(fig_date)
+    fig_agente = create_line_chart(Agente_dia, 'Day', 'Agente do Cadastro', None, "N° de agentes por dia", color_map1=color_map1)
+    st.plotly_chart(fig_agente)
 
-    #city_total = df_filtrado.groupby(['Localidade', 'Tipo de Validação'])['Matrícula'].count().reset_index()
-    #fig_local = create_bar_chart(city_total, 'Localidade', 'Matrícula', 'Tipo de Validação', "Visitas por Localidade", color_map=color_map)
-    #col12.plotly_chart(fig_local)
-
-    #ocorrencia_total = df_filtrado.groupby('Ocorrências')['Matrícula'].count().reset_index().sort_values('Matrícula')
-    #fig_ocorrencia = create_bar_chart(ocorrencia_total, 'Matrícula', 'Ocorrências', None, "Visitas por Ocorrência", orientation='h', color_map1=color_map1)
-    #col31.plotly_chart(fig_ocorrencia)
-
-    #fig_ocorrencia1 = px.pie(ocorrencia_total, names='Ocorrências', values='Matrícula', title="% Visitas por Ocorrência")
-    #fig_ocorrencia1.update_layout(legend=dict(
-    #    orientation='v',
-    #    xanchor='left',
-    #    yanchor='top',
-    #    x=0.5,
-    #    y=0
-    #))
-    #col32.plotly_chart(fig_ocorrencia1)
-
-    #val_total = df_validação.groupby('Mês de Validação')['Matrícula'].count().reset_index()
-    #fig_date_val = create_bar_chart(val_total, 'Mês de Validação', 'Matrícula', None, "Validação por Mês", color_map1=color_map1)
-    #col21.plotly_chart(fig_date_val)
-
-    #val_total1 = df_validação.groupby('Localidade')['Matrícula'].count().reset_index()
-    #fig_local_val = create_bar_chart(val_total1, 'Localidade', 'Matrícula', None, "Validação por Localidade", color_map1=color_map1)
-    #col22.plotly_chart(fig_local_val)
+    pivot_table = pd.pivot_table(df_filtrado, values='Matrícula', index=['Localidade','Agente do Cadastro'], columns='Day', aggfunc='count', fill_value=0)
+    st.markdown("<h3 style='font-size:16px;'> Produção de Agentes por dia </h3>", unsafe_allow_html=True)
+    st.dataframe(pivot_table)
+    st.write("")
 
 if __name__ == "__main__":
     main()
