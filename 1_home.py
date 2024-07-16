@@ -1,5 +1,4 @@
-#C:\Users\rslima\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\Scripts\streamlit.exe run 1_home.py
-
+# C:\Users\rslima\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\Scripts\streamlit.exe run 1_home.py
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -46,8 +45,8 @@ def main():
     fig_date = create_bar_chart(mes_total, 'Month', 'Matrícula', 'Tipo de Validação', "Visitas por Mês", color_map=color_map)
     col11.plotly_chart(fig_date)
 
-    city_total = df_filtrado.groupby(['Localidade', 'Tipo de Validação'])['Matrícula'].count().reset_index()
-    fig_local = create_bar_chart(city_total, 'Localidade', 'Matrícula', 'Tipo de Validação', "Visitas por Localidade", color_map=color_map)
+    city_total = df_filtrado.groupby(['Localidade'])['Matrícula'].count().reset_index()
+    fig_local = create_bar_chart(city_total, 'Localidade', 'Matrícula', None, "Visitas por Localidade", color_map1=color_map1)
     col12.plotly_chart(fig_local)
 
     ocorrencia_total = df_filtrado.groupby('Ocorrências')['Matrícula'].count().reset_index().sort_values('Matrícula')

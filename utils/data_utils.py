@@ -33,7 +33,7 @@ def preprocess_data(df):
     df['Ano de Validação'] = df['Data da Validação'].dt.year.astype(str)
     df['Mês de Validação'] = df['Data da Validação'].dt.month.astype(str)
     nao_validavel = ['MORADOR IMPEDIU', 'CASA FECHADA 1ª VISITA', 'CASA FECHADA 2ª VISITA', 'casa fechada']
-    df['Tipo de Ocorrência'] = df['Ocorrências'].apply(lambda x: 'Não Validável' if x in nao_validavel else 'Validável')
+    df['Tipo de Ocorrência'] = df['Ocorrências'].apply(lambda x: 'Não validável' if x in nao_validavel else 'Validável')
     return df
 
 @st.cache_data
