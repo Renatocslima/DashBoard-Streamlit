@@ -57,7 +57,7 @@ def main():
     Agente_dia = df_filtrado.groupby(df_filtrado['Day'])['Agente do Cadastro'].nunique().reset_index()
     fig_agente = create_line_chart(Agente_dia, 'Day', 'Agente do Cadastro', None, "N° de agentes por dia", color_map1=color_map1)
 
-    pivot_table = pd.pivot_table(df_filtrado, values='Matrícula', index=['Localidade','Agente do Cadastro'], columns='Day', aggfunc='count', fill_value=0)
+    pivot_table = pd.pivot_table(df_filtrado, values='Matrícula', index=['Localidade','Agente do Cadastro'], columns='Day', aggfunc='count')#, fill_value=0)
     pivot_table['Total'] = pivot_table.sum(axis=1)
     pivot_table['Média'] = pivot_table.mean(axis=1)
     total_dia = len(list(df_filtrado['Day'].unique()))
