@@ -20,6 +20,7 @@ def load_and_concatenate_data(file_pattern='datasets/*.csv', sep=';'):
 @st.cache_data
 def preprocess_data(df):
     df['Tipo de Validação'] = df['Tipo de Validação'].fillna('Não Validado')
+    df['Tipo de Validação'] = df['Tipo de Validação'].replace(' ', 'Não Validado')
     df['Data da Validação'] = df['Data da Validação'].fillna("01/01/1900 00:00:00")
     df = df.fillna(0)
     df['Data do Cadastro'] = pd.to_datetime(df['Data do Cadastro'], dayfirst=True, format='mixed')
