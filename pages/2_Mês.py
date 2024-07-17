@@ -59,13 +59,15 @@ def main():
 
     pivot_table = pd.pivot_table(df_filtrado, values='Matrícula', index=['Localidade','Agente do Cadastro'], columns='Day', aggfunc='count')#, fill_value=0)
     pivot_table['Total'] = pivot_table.sum(axis=1)
-    pivot_table['Média'] = pivot_table.mean(axis=1)
+    media_valores = pivot_table.drop(columns=['Total']).mean(axis=1)
+    media_valores = media_valores.round(0).astype(int)
+    pivot_table['Média'] = media_valores
     total_dia = len(list(df_filtrado['Day'].unique()))
     total = pivot_table['Total'].sum()
     media = total/total_dia
 
     #Visuais da Tela
-    st.markdown(f"<h3 style='font-size:16px;'> Total: {total} - Número de dias trabalhados: {total_dia} - Média: {media:.0f} </h3>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='font-size:16px;'> Total: {total:.0f} - Número de dias trabalhados: {total_dia} - Média: {media:.0f} </h3>", unsafe_allow_html=True)
     st.plotly_chart(fig_date)
     st.plotly_chart(fig_agente)
     st.markdown("<h3 style='font-size:16px;'> Produção de Agentes por dia </h3>", unsafe_allow_html=True)
