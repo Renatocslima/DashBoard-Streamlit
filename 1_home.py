@@ -22,20 +22,28 @@ def main():
     col31, col32 = st.columns(2)
     
     # Configuração de Filtro
+    oc = ['VALIDÁVEL', 'NÃO VALIDÁVEL', 'TODAS']
     local = ['TODAS'] + list(df['Localidade'].unique())
     localidade = st.sidebar.selectbox('Localidade', local)
     ano = st.sidebar.selectbox('Ano', df['Year'].unique())
+    tipo_de_ocorrencia = st.sidebar.selectbox('Tipo de Ocorrência', oc)
 
     if localidade == 'TODAS':
         filtro = local
     else:
         filtro = [localidade]
+    
+    if tipo_de_ocorrencia == 'TODAS': filtro2 = ['Validável', 'Não validável']
+    else: filtro2 = [tipo_de_ocorrencia.capitalize()]
 
     df_filtrado = df[df['Year'] == ano]
     df_filtrado = df_filtrado[df_filtrado['Localidade'].isin(filtro)]
+    df_filtrado1 = df_filtrado.copy()
+    df_filtrado = df_filtrado[df_filtrado['Tipo de Ocorrência'].isin(filtro2)]
 
     df_validação = df[(df['Ano de Validação'] == ano) & (df['Tipo de Validação'] == 'Validado')]
     df_validação = df_validação[df_validação['Localidade'].isin(filtro)]
+    df_validação = df_validação[df_validação['Tipo de Ocorrência'].isin(filtro2)]
 
     # Gráficos
     color_map = {'Validado': '#00049E', 'Não Validado': '#7275FE', 'Aguardando Análise': 'gray', 'Complemento de Fotos e Informações': 'gray', 'Revisão Interna': 'gray'}
@@ -45,11 +53,11 @@ def main():
     fig_date = create_bar_chart(mes_total, 'Month', 'Matrícula', 'Tipo de Validação', "Visitas por Mês", color_map=color_map)
     col11.plotly_chart(fig_date)
 
-    city_total = df_filtrado.groupby(['Localidade'])['Matrícula'].count().reset_index()
-    fig_local = create_bar_chart(city_total, 'Localidade', 'Matrícula', None, "Visitas por Localidade", color_map1=color_map1)
+    city_total = df_filtrado.groupby(['Localidade', 'Tipo de Validação'])['Matrícula'].count().reset_index()
+    fig_local = create_bar_chart(city_total, 'Localidade', 'Matrícula', 'Tipo de Validação', "Visitas por Localidade", color_map=color_map)
     col12.plotly_chart(fig_local)
 
-    ocorrencia_total = df_filtrado.groupby('Ocorrências')['Matrícula'].count().reset_index().sort_values('Matrícula')
+    ocorrencia_total = df_filtrado1.groupby('Ocorrências')['Matrícula'].count().reset_index().sort_values('Matrícula')
     fig_ocorrencia = create_bar_chart(ocorrencia_total, 'Matrícula', 'Ocorrências', None, "Visitas por Ocorrência", orientation='h', color_map1=color_map1)
     col31.plotly_chart(fig_ocorrencia)
 

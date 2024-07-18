@@ -20,14 +20,18 @@ def main():
     l0 = list(df['Localidade'].unique())
     l0.sort()
     local = ['TODAS'] + l0
+
     m0 = list(df['Month'].unique())
     m0.sort(reverse=True)
+
     oc = ['TODAS', 'VALIDÁVEL', 'NÃO VALIDÁVEL']
+
     #Botões
     localidade = st.sidebar.selectbox('Localidade', local)
     ano = st.sidebar.selectbox('Ano', df['Year'].unique())
     mes = st.sidebar.selectbox('Mês', m0)
     tipo_de_ocorrencia = st.sidebar.selectbox('Tipo de Ocorrência', oc)
+    
     #Filtros
     if localidade == 'TODAS': filtro = local
     else: filtro = [localidade]
