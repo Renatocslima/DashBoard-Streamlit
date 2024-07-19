@@ -29,14 +29,15 @@ def preprocess_data(df):
     df['Data do Cadastro'] = pd.to_datetime(df['Data do Cadastro'], dayfirst=True, format='mixed')
     df['Data da Validação'] = pd.to_datetime(df['Data da Validação'], dayfirst=True, format='mixed')
     df['dt_validação'] = df['Data da Validação'].dt.date
-    df = df.sort_values(['Data da Validação', 'Data do Cadastro'], ascending=False)
+    df = df.sort_values(['Data da Validação'], ascending=False)
+    df = df.sort_values(['Data do Cadastro'], ascending=False)
     df['Year'] = df['Data do Cadastro'].dt.year.astype(str)
     df['Month'] = df['Data do Cadastro'].dt.month.astype(str)
     df['Day'] = df['Data do Cadastro'].dt.strftime('%d')
-    df['Hour'] = df['Data do Cadastro'].dt.hour.astype(str)
+    df['Hour'] = df['Data do Cadastro'].dt.strftime('%H')
     df['Ano de Validação'] = df['Data da Validação'].dt.year.astype(str)
     df['Mês de Validação'] = df['Data da Validação'].dt.month.astype(str)
-    nao_validavel = ['MORADOR IMPEDIU', 'CASA FECHADA 1ª VISITA', 'CASA FECHADA 2ª VISITA', 'casa fechada']
+    nao_validavel = ['MORADOR IMPEDIU', 'CASA FECHADA 1ª VISITA', 'CASA FECHADA 2ª VISITA', 'Casa Fechada', 'Morador impediu']
     df['Tipo de Ocorrência'] = df['Ocorrências'].apply(lambda x: 'Não validável' if x in nao_validavel else 'Validável')
     return df
 

@@ -25,12 +25,14 @@ def main():
     m0.sort(reverse=True)
 
     oc = ['TODAS', 'VALIDÁVEL', 'NÃO VALIDÁVEL']
+    val = ['TODAS','Validado', 'Não Validado']
 
     #Botões
     localidade = st.sidebar.selectbox('Localidade', local)
     ano = st.sidebar.selectbox('Ano', df['Year'].unique())
     mes = st.sidebar.selectbox('Mês', m0)
     tipo_de_ocorrencia = st.sidebar.selectbox('Tipo de Ocorrência', oc)
+    tipo_de_validação = st.sidebar.selectbox('Tipo de Validação', val)
     
     #Filtros
     if localidade == 'TODAS': filtro = local
@@ -39,9 +41,13 @@ def main():
     if tipo_de_ocorrencia == 'TODAS': filtro2 = ['Validável', 'Não validável']
     else: filtro2 = [tipo_de_ocorrencia.capitalize()]
 
+    if tipo_de_validação == 'TODAS': filtro3 = ['Validado', 'Não Validado', 'Aguardando Análise', 'Complemento de Fotos e Informações', 'Revisão Interna']
+    else: filtro3 = [tipo_de_validação]
+
     df_filtrado = df[(df['Year'] == ano) & (df['Month'] == mes)]
     df_filtrado = df_filtrado[df_filtrado['Localidade'].isin(filtro)]
     df_filtrado = df_filtrado[df_filtrado['Tipo de Ocorrência'].isin(filtro2)]
+    df_filtrado = df_filtrado[df_filtrado['Tipo de Validação'].isin(filtro3)]
     df_filtrado = df_filtrado.sort_values(['Data do Cadastro'], ascending=False)
 
     df_validação = df[(df['Ano de Validação'] == ano) & (df['Mês de Validação'] == mes) & (df['Tipo de Validação'] == 'Validado')]
