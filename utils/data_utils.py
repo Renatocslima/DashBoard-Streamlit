@@ -19,6 +19,33 @@ def load_and_concatenate_data(file_pattern='datasets/*.csv', sep=';'):
 
 @st.cache_data
 def preprocess_data(df):
+    excluir_colunas = ['Setor', 'Quadra', 'Lote', 'Sublote', 'Endereço Referência Antes', 
+                  'Nr. Imóvel Antes', 'Endereço Referência Depois', 'Nr. Imóvel Depois', 
+                  'Bairro', 'Logradouro', 'Complemento', 'CEP Antes', 'CEP Depois', 'Controlador', 
+                  'Id do Controlador', 'Data Inclusão do Controlador', 'Entrevistado', 'Tipo do Entrevistado', 
+                  'Qualidade da Água', 'Regularidade do Fornecimento', 'Tipo de Pessoa Antes', 'Tipo de Pessoa Depois', 
+                  'Nome do Consumidor Antes', 'Nome do Consumidor Depois', 'CPF/CNPJ Antes', 'CPF/CNPJ Depois', 'Nr. RG Antes', 
+                  'Nr. RG Depois', 'Dt. Emissão do RG Antes', 'Dt. Emissão do RG Depois', 'Orgão Expedidor RG Antes', 
+                  'Orgão Expedidor RG Depois', 'UF Antes', 'UF Depois', 'Data Nasc. Antes', 'Data Nasc. Depois', 
+                  'Autorização de Envio de Campanhas', 'E-mail Antes', 'E-mail Depois', 'Telefones Fixos Antes', 
+                  'Telefones Fixos Depois', 'Telefones Móveis Antes', 'Telefones Móveis Depois', 'Perfil do Imóvel', 
+                  'Analisar Tarifa Social', 'Nr. Celpe', 'Pav. Rua Antes', 'Pav. Rua Depois', 'Pav. Calçada Antes', 
+                  'Pav. Calçada Depois', 'Fonte de Abastecimento Antes', 'Fonte de Abastecimento Depois', 'Possui Fossa?', 
+                  'Possui Piscina Antes?', 'Possui Piscina Depois?', 'Volume Piscina', 'Possui Cisterna?', 'Possui Caixa de Inspeção?', 
+                  'Teste de Cloro', 'Teste de Torneira Ligada', 'Sit. Imóvel', 'Matr. Vizinho', 'Matr. Unificado', 'Sit. Água Antes', 
+                  'Sit. Água Depois', 'Sit. Esgoto Antes', 'Sit. Esgoto Depois', 'Tipo Esgotamento Antes', 'Tipo Esgotamento Depois', 
+                  'Nr. Hd Antes', 'Nr. Hd Depois', 'Local de Instalação Antes', 'Local de Instalação Depois', 'Proteção Hd Antes', 
+                  'Proteção Hd Depois', 'Possui Cavalete Antes?', 'Possui Cavalete Depois?', 'Leitura Antes', 'Leitura Depois', 
+                  'Condições do HD', 'Condições do Abrigo do HD', 'Fontes Alternativas Antes', 'Fontes Alternativas Depois', 
+                  'Nr. Moradores Antes', 'Nr. Moradores Depois', 'Acessório de Rede Esgoto', 'Local Acessório de Rede Esgoto', 
+                  'Suspeita de Irregularidades', 'Vazamento', 'Observações', 'Observações Internas', 'Foto da Fachada', 'Foto do Medidor', 
+                  'Foto da Caixa de Inspeção', 'Foto da Fraude', 'Foto do Vazamento', 'Foto da Mudança de Titularidade', 
+                  'Foto do Teste de Cloro', 'Foto Extra', 'Foto da Instalação', 'Foto do Formulário', 'Id do Agente do Cadastro', 
+                  'Data de Inclusão do Agente do Cadastro', 'Número da Visita', 'Data Envio Fluir', 'Nome Arquivo Retorno Fluir', 
+                  'Usuário da Exportação', 'Data Reenvio Fluir', 'Nome Arquivo Correção Fluir', 'Usuário da Exportação da Correção', 
+                  'Nome do Arquivo SAN', 'Observação da Validação', 'Data da Auditoria', 'Auditor', 'Observação da Auditoria', 
+                  'Tipo da Auditoria']
+    df.drop(excluir_colunas, axis=1, errors='ignore', inplace=True)
     df['Agente do Cadastro'] = df['Agente do Cadastro'].replace(0, 'Vazio')
     df['Agente do Cadastro'] = df['Agente do Cadastro'].fillna('Vazio')
     df['Agente do Cadastro'] = df['Agente do Cadastro'].astype(str)
@@ -39,6 +66,7 @@ def preprocess_data(df):
     df['Mês de Validação'] = df['Data da Validação'].dt.month.astype(str)
     nao_validavel = ['MORADOR IMPEDIU', 'CASA FECHADA 1ª VISITA', 'CASA FECHADA 2ª VISITA', 'Casa Fechada', 'Morador impediu']
     df['Tipo de Ocorrência'] = df['Ocorrências'].apply(lambda x: 'Não validável' if x in nao_validavel else 'Validável')
+    df['Ocorrências'] = df['Ocorrências'].str.upper()
     return df
 
 @st.cache_data

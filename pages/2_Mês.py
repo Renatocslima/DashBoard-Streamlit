@@ -77,7 +77,7 @@ def main():
     media = total/total_dia
 
     #Visuais da Tela
-    st.markdown(f"<h3 style='font-size:16px;'> Total: {total:.0f} - Número de dias trabalhados: {total_dia} - Média: {media:.0f} </h3>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='font-size:18px;'> Total: {total:.0f} - Número de dias trabalhados: {total_dia} - Média: {media:.0f} </h3>", unsafe_allow_html=True)
     st.plotly_chart(fig_date)
     st.plotly_chart(fig_agente)
     st.markdown("<h3 style='font-size:16px;'> Produção de Agentes por dia </h3>", unsafe_allow_html=True)
