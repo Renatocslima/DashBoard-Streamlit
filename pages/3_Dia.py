@@ -68,7 +68,13 @@ def main():
     media_valores = media_valores.round(0).astype(int)
     pivot_table['Média'] = media_valores
 
-    df_filtrado2 = df_filtrado[df_filtrado['Validador']!=0]
+    df_filtrado2 = df[df['Validador']!=0]
+    df_filtrado2 = df[(df['Ano de Validação'] == ano) & (df['Mês de Validação'] == mes) & (df['Dia de Validação'] == dia)]
+    df_filtrado2 = df_filtrado2[df_filtrado2['Localidade'].isin(filtro)]
+    df_filtrado2 = df_filtrado2[df_filtrado2['Tipo de Ocorrência'].isin(filtro2)]
+    df_filtrado2 = df_filtrado2[df_filtrado2['Tipo de Validação'].isin(filtro3)]
+    df_filtrado2 = df_filtrado2.sort_values(['Data da Validação'], ascending=False)
+
     pivot_validavel = pd.pivot_table(df_filtrado2, values='Matrícula', index=['Validador'], columns='Hora de Validação', aggfunc='count')
     pivot_validavel['Total'] = pivot_validavel.sum(axis=1)
     media_validavel = pivot_validavel.drop(columns=['Total']).mean(axis=1)
