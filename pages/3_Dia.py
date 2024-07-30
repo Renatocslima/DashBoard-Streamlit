@@ -25,7 +25,7 @@ def main():
 
     d0 = list(df['Day'].unique())
 
-    oc = ['TODAS', 'VALIDÁVEL', 'NÃO VALIDÁVEL']
+    oc = ['VALIDÁVEL', 'NÃO VALIDÁVEL', 'TODAS']
     val = ['TODAS','Validado', 'Não Validado']
 
     #Botões
@@ -67,8 +67,18 @@ def main():
     media_valores = pivot_table.drop(columns=['Total']).mean(axis=1)
     media_valores = media_valores.round(0).astype(int)
     pivot_table['Média'] = media_valores
+
+    df_filtrado2 = df_filtrado[df_filtrado['Validador']!=0]
+    pivot_validavel = pd.pivot_table(df_filtrado2, values='Matrícula', index=['Validador'], columns='Hora de Validação', aggfunc='count')
+    pivot_validavel['Total'] = pivot_validavel.sum(axis=1)
+    media_validavel = pivot_validavel.drop(columns=['Total']).mean(axis=1)
+    media_validavel = media_validavel.round(0).astype(int)
+    pivot_validavel['Média'] = media_validavel
+
     st.markdown("<h3 style='font-size:16px;'> Produção de Agentes por Hora </h3>", unsafe_allow_html=True)
     st.dataframe(pivot_table)
+    st.markdown("<h3 style='font-size:16px;'> Produção de Validadores por Hora </h3>", unsafe_allow_html=True)
+    st.dataframe(pivot_validavel)
 
 
 if __name__ == "__main__":
