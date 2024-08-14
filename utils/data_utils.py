@@ -71,7 +71,7 @@ def preprocess_data(df):
     return df
 
 @st.cache_data
-def create_bar_chart(data, x, y, color, title, orientation='v', color_map=None, color_map1=None, text_auto=True):
+def create_bar_chart(data, x, y, title, color=None, orientation='v', color_map=None, color_map1=None, text_auto=True):
     """
     Cria um gráfico de barras usando o Plotly Express.
 
@@ -107,7 +107,7 @@ def create_bar_chart(data, x, y, color, title, orientation='v', color_map=None, 
     return fig
 
 @st.cache_data
-def create_line_chart(data, x, y, color, title, color_map=None, color_map1=None):
+def create_line_chart(data, x, y, title, color=None, color_map=None, color_map1=None):
     """
     Cria um gráfico de linhas usando o Plotly Express.
 
