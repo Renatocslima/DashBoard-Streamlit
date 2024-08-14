@@ -8,7 +8,6 @@ st.set_page_config(layout="wide")
 def main():
     st.title("Dashboard")
     st.write("")
-    num_linhas = 5
     col01, col02 = st.columns(2)
     nome = col01.text_input("Qual seu nome?")
     num_linhas = col02.number_input("Digite um número de 0 a 9", min_value=0, max_value=9, step=1)
