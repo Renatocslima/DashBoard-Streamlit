@@ -1,83 +1,77 @@
-# C:\Users\rslima\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\Scripts\streamlit.exe run 1_home.py
 import streamlit as st
 import pandas as pd
-import plotly.express as px
-from utils.data_utils import load_and_concatenate_data, preprocess_data, create_bar_chart
+from utils.data_utils import load_and_concatenate_data, preprocess_data, create_bar_chart, create_pie_chart, create_line_chart, create_pivot_table
 
-# Configuração da Página
+# - Configuração da Página
 st.set_page_config(layout="wide")
 
 def main():
-        
-    st.title("Dashboard de Visitas")
+    st.title("Dashboard")
+    st.write("")
 
-    # Carregar dados
-    df = load_and_concatenate_data()
+    # Apenas para teste
+    # -------------------------------------------------
+    col01, col02 = st.columns(2)
+    nome = col01.text_input("Qual seu nome?")
+    num_linhas = col02.number_input("Digite um número de 0 a 9", min_value=0, max_value=9, step=1)
+    st.markdown(f"<h3 style='font-size:18px;'> Olá {nome}, esse é um Dashboard exemplo no Streamlit, edite para pegar seus dados e criar as tabelas e os gráficos que precisa.</h3>", unsafe_allow_html=True)
+    numeros = list(range(0, num_linhas + 1))
+    
+    df=pd.DataFrame({
+    'coluna': numeros,
+    'numeros': numeros})
 
-    # Pré-processar dados
-    df = preprocess_data(df)
-   
+    df['tipo'] = df['numeros'].apply(lambda x: 'Par' if x % 2 == 0 else 'Ímpar')
+    # -------------------------------------------------
+
+    # Esse código carrega e trata seus arquivos .csv presentes na pasta datasets de acordo com data_utils.py, retire o simbolo de comentário
+    # -------------------------------------------------
+    # - Carregar dados
+    #df = load_and_concatenate_data()
+
+    # - Pré-processar dados
+    #df = preprocess_data(df)
+    # -------------------------------------------------
+
     col11, col12 = st.columns(2)
     col21, col22 = st.columns(2)
     col31, col32 = st.columns(2)
+
+    # - Configuração de Filtro
+    st.sidebar.header("Titulo do Sidebar")
+    lista_de_seleção = ['Todos'] + list(df['tipo'].unique())
+    seleção = st.sidebar.selectbox('Titulo do Filtro', lista_de_seleção)
     
-    # Configuração de Filtro
-    oc = ['VALIDÁVEL', 'NÃO VALIDÁVEL', 'TODAS']
-    local = ['TODAS'] + list(df['Localidade'].unique())
-    localidade = st.sidebar.selectbox('Localidade', local)
-    ano = st.sidebar.selectbox('Ano', df['Year'].unique())
-    tipo_de_ocorrencia = st.sidebar.selectbox('Tipo de Ocorrência', oc)
+    if seleção == 'Todos': filtro = lista_de_seleção
+    else: filtro = [seleção]
 
-    if localidade == 'TODAS':
-        filtro = local
-    else:
-        filtro = [localidade]
-    
-    if tipo_de_ocorrencia == 'TODAS': filtro2 = ['Validável', 'Não validável']
-    else: filtro2 = [tipo_de_ocorrencia.capitalize()]
+    df_filtrado = df[df['tipo'].isin(filtro)]
 
-    df_filtrado = df[df['Year'] == ano]
-    df_filtrado = df_filtrado[df_filtrado['Localidade'].isin(filtro)]
-    df_filtrado1 = df_filtrado.copy()
-    df_filtrado = df_filtrado[df_filtrado['Tipo de Ocorrência'].isin(filtro2)]
-
-    df_validação = df[(df['Ano de Validação'] == ano) & (df['Tipo de Validação'] == 'Validado')]
-    df_validação = df_validação[df_validação['Localidade'].isin(filtro)]
-    df_validação = df_validação[df_validação['Tipo de Ocorrência'].isin(filtro2)]
-
-    # Gráficos
-    color_map = {'Validado': '#00049E', 'Não Validado': '#7275FE', 'Aguardando Análise': 'gray', 'Complemento de Fotos e Informações': 'gray', 'Revisão Interna': 'gray'}
+    # - Gráficos
+    color_map = {'Item1': '#00049E', 'Item2': '#7275FE', 'Item3': 'gray'}
     color_map1 = ['#00049E','#7275FE']
 
-    mes_total = df_filtrado.groupby(['Month', 'Tipo de Validação'])['Matrícula'].count().reset_index()
-    fig_date = create_bar_chart(mes_total, 'Month', 'Matrícula', 'Tipo de Validação', "Visitas por Mês", color_map=color_map)
-    col11.plotly_chart(fig_date)
+    tabela = df_filtrado.groupby(['coluna', 'tipo'])['numeros'].sum().reset_index()#.count().reset_index()
 
-    city_total = df_filtrado.groupby(['Localidade', 'Tipo de Validação'])['Matrícula'].count().reset_index()
-    fig_local = create_bar_chart(city_total, 'Localidade', 'Matrícula', 'Tipo de Validação', "Visitas por Localidade", color_map=color_map)
-    col12.plotly_chart(fig_local)
+    tabela=tabela.sort_values(by=['numeros'], ignore_index=True)
+    col11.write("Tabela Agrupada")
+    col11.table(tabela)
 
-    ocorrencia_total = df_filtrado1.groupby('Ocorrências')['Matrícula'].count().reset_index().sort_values('Matrícula')
-    fig_ocorrencia = create_bar_chart(ocorrencia_total, 'Matrícula', 'Ocorrências', None, "Visitas por Ocorrência", orientation='h', color_map1=color_map1)
-    col31.plotly_chart(fig_ocorrencia)
+    pivot = create_pivot_table(df_filtrado, values='numeros', index=['tipo'], col='coluna', func='sum', fill=0)
+    col12.write("Tabela Dinâmica")
+    col12.table(pivot)
 
-    fig_ocorrencia1 = px.pie(ocorrencia_total, names='Ocorrências', values='Matrícula', title="% Visitas por Ocorrência")
-    fig_ocorrencia1.update_layout(legend=dict(
-        orientation='v',
-        xanchor='left',
-        yanchor='top',
-        x=0.5,
-        y=0
-    ))
-    col32.plotly_chart(fig_ocorrencia1)
+    fig_bar = create_bar_chart(tabela, x='coluna', y='numeros', color='tipo', title="Titulo do Gráfico")
+    col21.plotly_chart(fig_bar)
 
-    val_total = df_validação.groupby('Mês de Validação')['Matrícula'].count().reset_index()
-    fig_date_val = create_bar_chart(val_total, 'Mês de Validação', 'Matrícula', None, "Validação por Mês", color_map1=color_map1)
-    col21.plotly_chart(fig_date_val)
+    fig_pie = create_pie_chart(tabela, x='coluna', y='numeros', title="Titulo do Gráfico")
+    col22.plotly_chart(fig_pie)
 
-    val_total1 = df_validação.groupby('Localidade')['Matrícula'].count().reset_index()
-    fig_local_val = create_bar_chart(val_total1, 'Localidade', 'Matrícula', None, "Validação por Localidade", color_map1=color_map1)
-    col22.plotly_chart(fig_local_val)
+    fig_line = create_line_chart(tabela, x='coluna', y='numeros', color=None, title="Titulo do Gráfico", color_map=color_map)
+    col31.plotly_chart(fig_line)
+
+    fig_bar_h = create_bar_chart(tabela, y='coluna', x='numeros', title="Titulo do Gráfico", orientation='h')
+    col32.plotly_chart(fig_bar_h)
 
 if __name__ == "__main__":
     main()
